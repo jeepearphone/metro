@@ -1,13 +1,21 @@
 package entities;
 
 import entities.station.Station;
+import entities.train.Train;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Line {
-    private int id;
-    private String name;
-    ArrayList<Station> stations;
-    ArrayList<Train> trains;
+    private final int id;
+    private static int count;
+    private final String name;
+    List<Station> stations;
+    List<Train> trains;
+
+    public Line(String name){
+        id = count + 1;
+        count++;
+        this.name = name;
+    }
 
 }
