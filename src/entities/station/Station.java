@@ -1,6 +1,6 @@
 package entities.station;
 
-import entities.Line;
+import entities.line.Line;
 import entities.TypeTime;
 
 import java.util.List;
@@ -26,5 +26,16 @@ public class Station {
     public StationDemand getDemand(TypeTime time){
         TimesStationBehavior behavior = new TimesStationBehavior(type);
         return behavior.getDemand(time);
+    }
+    public List<Line> getLines(){
+        return lines;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 }

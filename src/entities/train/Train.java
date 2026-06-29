@@ -1,6 +1,6 @@
 package entities.train;
 
-import entities.Line;
+import entities.line.Line;
 
 public class Train {
     private final int id;
