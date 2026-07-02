@@ -14,11 +14,11 @@ public class StationPair {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof StationPair that)) return false;
-        return start.equals(that.start) && finish.equals(that.finish);
+        return (start.getId() == that.start.getId()) && (finish.getId() == that.finish.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(start, finish);
+        return Objects.hash(start.getId(), finish.getId());
     }
 }

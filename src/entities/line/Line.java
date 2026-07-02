@@ -34,4 +34,9 @@ public class Line {
         }
         return edges;
     }
+
+    public List<Station> getStations() {
+        return stations;
+    }
+
 }

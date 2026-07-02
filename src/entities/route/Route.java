@@ -12,6 +12,11 @@ public class Route {
         this.transitions = transitions;
     }
 
+    public boolean transit(){
+        transitions.remove(0);
+        return transitions.isEmpty();
+    }
+
     public Station getNextStop(){
         return transitions.getFirst();
     }
@@ -20,8 +25,4 @@ public class Route {
         return new ArrayList<>(transitions);
     }
 
-    public boolean transit(){
-        transitions.remove(0);
-        return transitions.isEmpty();
-    }
 }

@@ -51,7 +51,7 @@ public class RouteFinder {
                 for (Edge edge : line.getAllEdges(current)){
                     Station neighbor = edge.getStationTo();
                     int newTime = timeTo.get(current) + edge.getTimeTo();
-                    if (timeTo.containsKey(neighbor) || newTime < timeTo.get(neighbor)){
+                    if (!timeTo.containsKey(neighbor) || newTime < timeTo.get(neighbor)){
                         timeTo.put(neighbor, newTime);
                         previous.put(neighbor, current);
                         queue.add(neighbor);

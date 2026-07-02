@@ -2,8 +2,11 @@ package entities.station;
 
 import entities.line.Line;
 import entities.TypeTime;
+import entities.passanger.Passanger;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Station {
     private final int id;
@@ -13,6 +16,8 @@ public class Station {
     private final String name;
     private final TypeStation type;
     private List<Line> lines;
+    private List<Passanger> passangers;
+
     public Station(int x, int y, String name, TypeStation type, List<Line> lines){
         id = count + 1;
         this.x = x;
@@ -21,6 +26,20 @@ public class Station {
         this.type = type;
         this.lines = lines;
         count++;
+    }
+
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Station station)) return false;
+        return id == station.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public StationDemand getDemand(TypeTime time){
@@ -37,5 +56,9 @@ public class Station {
 
     public int getY() {
         return y;
+    }
+
+    public int getId() {
+        return id;
     }
 }
