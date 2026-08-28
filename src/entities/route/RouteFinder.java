@@ -12,20 +12,18 @@ public class RouteFinder {
     private Map<StationPair, List<Station>> routes = new HashMap<>();
 
     public Route findRoute(
-            Stations stations,
             Station start,
             Station finish
     ){
         StationPair key = new StationPair(start, finish);
         if (!routes.containsKey(key)){
-            Route route = calculateRoute(stations, start, finish);
+            Route route = calculateRoute(start, finish);
             routes.put(key, route.getTransitions());
         }
         return new Route(new ArrayList<>(routes.get(key)));
     }
 
     public Route calculateRoute(
-            Stations stations,
             Station start,
             Station finish
     ){

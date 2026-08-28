@@ -1,6 +1,7 @@
 package entities.line;
 
 import entities.station.Station;
+import entities.train.Direction;
 import entities.train.Train;
 
 import java.util.ArrayList;
@@ -33,6 +34,17 @@ public class Line {
             edges.add(edge);
         }
         return edges;
+    }
+
+    public Direction chooseDirection(Station stationFrom, Station stationTo){
+        int indexFrom = stations.indexOf(stationFrom);
+        int indexTo = stations.indexOf(stationTo);
+        if (indexFrom < indexTo) {
+            return Direction.FORWARD;
+        }
+        else {
+            return Direction.BACKWARD;
+        }
     }
 
     public List<Station> getStations() {

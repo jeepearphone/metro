@@ -13,7 +13,7 @@ public class Route {
     }
 
     public boolean transit(){
-        transitions.remove(0);
+        transitions.removeFirst();
         return transitions.isEmpty();
     }
 

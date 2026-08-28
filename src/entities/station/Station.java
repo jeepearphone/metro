@@ -28,7 +28,13 @@ public class Station {
         count++;
     }
 
+    public void landingPassangerToStation(Passanger passanger){
+        passangers.add(passanger);
+    }
 
+    public void landingPassangerFromStation(Passanger passanger){
+        passangers.remove(passanger);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -60,5 +66,13 @@ public class Station {
 
     public int getId() {
         return id;
+    }
+
+    public int getCountPassangers(){
+        return passangers.size();
+    }
+
+    public List<Passanger> getPassangers() {
+        return passangers;
     }
 }
