@@ -11,13 +11,21 @@ public class Line {
     private final int id;
     private static int count;
     private final String name;
-    List<Station> stations;
-    List<Train> trains;
+    private final List<Station> stations = new ArrayList<>();
+    private final List<Train> trains = new ArrayList<>();
 
     public Line(String name){
         id = count + 1;
         count++;
         this.name = name;
+    }
+
+    public void addStation(Station station){
+        stations.add(station);
+    }
+
+    public void addTrain(Train train){
+        trains.add(train);
     }
 
     public List<Edge> getAllEdges(Station station){
@@ -47,8 +55,23 @@ public class Line {
         }
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public boolean hasStation(Station station){
+        return stations.contains(station);
     }
 
+    public List<Station> getStations() {
+        return List.copyOf(stations);
+    }
+
+    public List<Train> getTrains() {
+        return List.copyOf(trains);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -6,9 +6,9 @@ import entities.station.Station;
 import entities.train.Direction;
 
 public class Passanger {
-    private Station startStation;
-    private Station finalStation;
-    private Route route;
+    private final Station startStation;
+    private final Station finalStation;
+    private final Route route;
 
     public Passanger(Station startStation, Station finalStation, Route route){
         this.startStation = startStation;
@@ -18,6 +18,10 @@ public class Passanger {
 
     public boolean isYourStation(Station station){
         return route.getNextStop().equals(station);
+    }
+
+    public boolean needsLine(Line line){
+        return line.hasStation(route.getNextStop());
     }
 
     public boolean transit(){
@@ -34,5 +38,9 @@ public class Passanger {
 
     public Station getStartStation() {
         return startStation;
+    }
+
+    public Station getFinalStation() {
+        return finalStation;
     }
 }

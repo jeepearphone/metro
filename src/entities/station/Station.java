@@ -15,8 +15,12 @@ public class Station {
     private final int y;
     private final String name;
     private final TypeStation type;
-    private List<Line> lines;
-    private List<Passanger> passangers;
+    private final List<Line> lines;
+    private final List<Passanger> passangers = new ArrayList<>();
+
+    public Station(int x, int y, String name, TypeStation type){
+        this(x, y, name, type, List.of());
+    }
 
     public Station(int x, int y, String name, TypeStation type, List<Line> lines){
         id = count + 1;
@@ -24,8 +28,12 @@ public class Station {
         this.y = y;
         this.name = name;
         this.type = type;
-        this.lines = lines;
+        this.lines = new ArrayList<>(lines);
         count++;
+    }
+
+    public void addLine(Line line){
+        lines.add(line);
     }
 
     public void landingPassangerToStation(Passanger passanger){
@@ -52,8 +60,9 @@ public class Station {
         TimesStationBehavior behavior = new TimesStationBehavior(type);
         return behavior.getDemand(time);
     }
+
     public List<Line> getLines(){
-        return lines;
+        return List.copyOf(lines);
     }
 
     public int getX() {
@@ -68,11 +77,19 @@ public class Station {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public TypeStation getType() {
+        return type;
+    }
+
     public int getCountPassangers(){
         return passangers.size();
     }
 
     public List<Passanger> getPassangers() {
-        return passangers;
+        return List.copyOf(passangers);
     }
 }

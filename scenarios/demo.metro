@@ -1,0 +1,47 @@
+# Демонстрационная схема: три линии и три пересадочных узла.
+# Тот же синтаксис, что и в консоли — этот файл можно править руками,
+# а команда save записывает текущую схему обратно в таком же виде.
+
+# --- линии ---
+line M1
+line M2
+line M3
+
+# --- станции: station <x> <y> <имя> <тип> ---
+station 2 4 "Северная" RESIDENTIAL
+station 10 6 "Парк Победы" RESIDENTIAL
+station 18 10 "Центральная" TRANSPORT_HUB
+station 26 12 "Деловая" BUSINESS
+station 38 14 "Аэропорт" TRANSPORT_HUB
+
+station 16 2 "Университет" MIXED
+station 17 6 "Музейная" TOURIST
+station 20 15 "Торговая" SHOPPING
+station 22 22 "Южная" RESIDENTIAL
+
+station 30 4 "Стадион" TOURIST
+station 12 20 "Заводская" RESIDENTIAL
+
+# --- порядок станций на линиях: attach <линия> <станция> ---
+attach M1 "Северная"
+attach M1 "Парк Победы"
+attach M1 "Центральная"
+attach M1 "Деловая"
+attach M1 "Аэропорт"
+
+attach M2 "Университет"
+attach M2 "Музейная"
+attach M2 "Центральная"
+attach M2 "Торговая"
+attach M2 "Южная"
+
+attach M3 "Стадион"
+attach M3 "Деловая"
+attach M3 "Торговая"
+attach M3 "Заводская"
+
+# --- поезда: train <линия> <направление> <индекс станции на линии> ---
+train M1 FORWARD 1
+train M1 BACKWARD 3
+train M2 FORWARD 2
+train M3 FORWARD 0

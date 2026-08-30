@@ -3,9 +3,12 @@ package entities.line;
 import entities.station.Station;
 
 public class Edge {
-    private Station stationFrom;
-    private Station stationTo;
-    private int timeTo;
+    private static final int MINUTES_PER_STOP = 1;
+    private static final int MIN_TRAVEL_MINUTES = 1;
+
+    private final Station stationFrom;
+    private final Station stationTo;
+    private final int timeTo;
 
     public Edge(Station stationFrom, Station stationTo){
         this.stationFrom = stationFrom;
@@ -13,11 +16,11 @@ public class Edge {
         this.timeTo = calculateTime();
     }
 
-    public int calculateTime(){
-        return (int)Math.round(Math.sqrt(
-                (stationFrom.getX() - stationTo.getX()) * (stationFrom.getX() - stationTo.getX()) +
-                        (stationFrom.getY() - stationTo.getY()) * (stationFrom.getY() - stationTo.getY())
-        ));
+    private int calculateTime(){
+        int dx = stationFrom.getX() - stationTo.getX();
+        int dy = stationFrom.getY() - stationTo.getY();
+        int travel = (int) Math.round(Math.sqrt(dx * dx + dy * dy));
+        return Math.max(MIN_TRAVEL_MINUTES, travel) + MINUTES_PER_STOP;
     }
 
     public Station getStationFrom(){

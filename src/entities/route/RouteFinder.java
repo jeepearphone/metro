@@ -1,6 +1,5 @@
 package entities.route;
 
-import entities.Stations;
 import entities.line.Edge;
 import entities.line.Line;
 import entities.station.Station;
@@ -9,21 +8,32 @@ import entities.station.StationPair;
 import java.util.*;
 
 public class RouteFinder {
-    private Map<StationPair, List<Station>> routes = new HashMap<>();
+    private final Map<StationPair, List<Station>> routes = new HashMap<>();
 
-    public Route findRoute(
+    public Optional<Route> findRoute(
             Station start,
             Station finish
     ){
-        StationPair key = new StationPair(start, finish);
-        if (!routes.containsKey(key)){
-            Route route = calculateRoute(start, finish);
-            routes.put(key, route.getTransitions());
+        if (start.equals(finish)){
+            return Optional.empty();
         }
-        return new Route(new ArrayList<>(routes.get(key)));
+        StationPair key = new StationPair(start, finish);
+        List<Station> path = routes.get(key);
+        if (path == null){
+            path = calculateRoute(start, finish);
+            routes.put(key, path);
+        }
+        if (path.isEmpty()){
+            return Optional.empty();
+        }
+        return Optional.of(new Route(new ArrayList<>(path)));
     }
 
-    public Route calculateRoute(
+    public void invalidate(){
+        routes.clear();
+    }
+
+    private List<Station> calculateRoute(
             Station start,
             Station finish
     ){
@@ -60,19 +70,20 @@ public class RouteFinder {
         return buildRoute(previous, start, finish);
     }
 
-    public Route buildRoute(
+    private List<Station> buildRoute(
             Map<Station, Station> previous,
             Station start,
             Station finish
     ){
+        if (!finish.equals(start) && !previous.containsKey(finish)){
+            return List.of();
+        }
         List<Station> path = new LinkedList<>();
         Station current = finish;
         while (current != null){
             path.add(0, current);
             current = previous.get(current);
         }
-        return new Route(path);
+        return path;
     }
 }
-
-
