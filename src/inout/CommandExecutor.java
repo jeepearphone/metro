@@ -1,5 +1,6 @@
 package inout;
 
+import entities.MetroMap;
 import entities.TypeTime;
 import entities.line.Line;
 import entities.passanger.Passanger;
@@ -9,6 +10,7 @@ import entities.station.TypeStation;
 import entities.train.Direction;
 import entities.train.Train;
 import metro.MetroSystem;
+import metro.SimulationSystem;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -16,17 +18,21 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Единственное место, где команда превращается в вызов MetroSystem.
+ * Единственное место, где команда превращается в вызов домена.
  * Ошибочная команда возвращает текст ошибки и не роняет сессию.
  */
 public class CommandExecutor {
     private final MetroSystem metro;
+    private final MetroMap metroMap;
+    private final SimulationSystem simulation;
     private final ScenarioIO scenarioIO;
     private final AsciiMap asciiMap = new AsciiMap();
     private boolean finished;
 
     public CommandExecutor(MetroSystem metro, ScenarioIO scenarioIO){
         this.metro = metro;
+        this.metroMap = metro.map();
+        this.simulation = metro.simulation();
         this.scenarioIO = scenarioIO;
     }
 
@@ -36,7 +42,7 @@ public class CommandExecutor {
             case "station" -> station(command);
             case "attach" -> attach(command);
             case "train" -> train(command);
-            case "map" -> asciiMap.render(metro.getStations(), metro.getLines());
+            case "map" -> asciiMap.render(metroMap);
             case "lines" -> lines();
             case "stations" -> stations();
             case "trains" -> trains();
@@ -56,12 +62,12 @@ public class CommandExecutor {
     }
 
     private String line(Command command){
-        Line line = metro.addLine(command.arg(0, "имя линии"));
+        Line line = metroMap.addLine(command.arg(0, "имя линии"));
         return "Линия " + line.getName() + " создана";
     }
 
     private String station(Command command){
-        Station station = metro.addStation(
+        Station station = metroMap.addStation(
                 command.intArg(0, "координата x"),
                 command.intArg(1, "координата y"),
                 command.arg(2, "имя станции"),
@@ -71,29 +77,29 @@ public class CommandExecutor {
     }
 
     private String attach(Command command){
-        Line line = metro.requireLine(command.arg(0, "имя линии"));
-        Station station = metro.requireStation(command.arg(1, "имя станции"));
-        metro.attach(line, station);
+        Line line = metroMap.requireLine(command.arg(0, "имя линии"));
+        Station station = metroMap.requireStation(command.arg(1, "имя станции"));
+        metroMap.attach(line, station);
         return station.getName() + " добавлена на линию " + line.getName()
                 + " (станций на линии: " + line.getStations().size() + ")";
     }
 
     private String train(Command command){
-        Line line = metro.requireLine(command.arg(0, "имя линии"));
+        Line line = metroMap.requireLine(command.arg(0, "имя линии"));
         Direction direction = command.enumArg(1, Direction.class, "направление");
         int index = command.intArg(2, "индекс станции");
-        Train train = metro.addTrain(line, direction, index);
+        Train train = simulation.addTrain(line, direction, index);
         return "Поезд #" + train.getId() + " на линии " + line.getName()
                 + ", направление " + direction
                 + ", следующая станция: " + line.getStations().get(index).getName();
     }
 
     private String lines(){
-        if (metro.getLines().isEmpty()){
+        if (metroMap.getLines().isEmpty()){
             return "Линий нет";
         }
         StringBuilder result = new StringBuilder();
-        for (Line line : metro.getLines()){
+        for (Line line : metroMap.getLines()){
             result.append(line.getName()).append(": ");
             List<Station> stations = line.getStations();
             if (stations.isEmpty()){
@@ -111,28 +117,28 @@ public class CommandExecutor {
     }
 
     private String stations(){
-        if (metro.getStations().isEmpty()){
+        if (metroMap.getStations().isEmpty()){
             return "Станций нет";
         }
         StringBuilder result = new StringBuilder();
-        for (Station station : metro.getStations().getStations()){
+        for (Station station : metroMap.getStations()){
             result.append(station.getId()).append("  ")
                     .append(station.getName())
                     .append(" (").append(station.getX()).append(", ").append(station.getY()).append(")  ")
                     .append(station.getType())
-                    .append("  линии: ").append(AsciiMap.lineNames(station))
+                    .append("  линии: ").append(AsciiMap.lineNames(station, metroMap))
                     .append("  пассажиров: ").append(station.getCountPassangers())
-                    .append('\n');
+                    .append("\n");
         }
         return result.toString().stripTrailing();
     }
 
     private String trains(){
-        if (metro.getTrains().isEmpty()){
+        if (simulation.getTrains().isEmpty()){
             return "Поездов нет";
         }
         StringBuilder result = new StringBuilder();
-        for (Train train : metro.getTrains()){
+        for (Train train : simulation.getTrains()){
             List<Station> stations = train.getLine().getStations();
             result.append("#").append(train.getId())
                     .append("  линия ").append(train.getLine().getName())
@@ -140,15 +146,15 @@ public class CommandExecutor {
                     .append("  следующая: ").append(stations.get(train.getNextStationIndex()).getName())
                     .append("  пассажиров: ").append(train.getCountPassangers())
                     .append("/").append(Train.getCapability())
-                    .append('\n');
+                    .append("\n");
         }
         return result.toString().stripTrailing();
     }
 
     private String route(Command command){
-        Station from = metro.requireStation(command.arg(0, "станция отправления"));
-        Station to = metro.requireStation(command.arg(1, "станция назначения"));
-        Optional<Route> route = metro.findRoute(from, to);
+        Station from = metroMap.requireStation(command.arg(0, "станция отправления"));
+        Station to = metroMap.requireStation(command.arg(1, "станция назначения"));
+        Optional<Route> route = metro.routeFinder().findRoute(from, to);
         if (route.isEmpty()){
             return "Маршрута " + from.getName() + " -> " + to.getName() + " нет: станции не связаны";
         }
@@ -160,16 +166,16 @@ public class CommandExecutor {
             }
             result.append(path.get(i).getName());
         }
-        result.append("\nвсего ").append(metro.routeMinutes(path))
+        result.append("\nвсего ").append(route.get().routeMinutes())
                 .append(" мин, станций: ").append(path.size());
         return result.toString();
     }
 
     private String spawn(Command command){
-        Station station = metro.requireStation(command.arg(0, "станция"));
+        Station station = metroMap.requireStation(command.arg(0, "станция"));
         TypeTime time = command.enumArg(1, TypeTime.class, "время суток");
         int minutes = command.size() > 2 ? command.intArg(2, "минут") : 1;
-        List<Passanger> created = metro.spawnPassangers(station, time, minutes);
+        List<Passanger> created = simulation.spawnPassangers(station, time, minutes);
         if (created.isEmpty()){
             return "На станции " + station.getName() + " (" + time + ", " + minutes
                     + " мин) пассажиров не появилось";
@@ -180,7 +186,7 @@ public class CommandExecutor {
         for (Passanger passanger : created){
             List<Station> path = passanger.getRoute().getTransitions();
             result.append("  -> ").append(passanger.getFinalStation().getName())
-                    .append(" (").append(metro.routeMinutes(path)).append(" мин, станций: ")
+                    .append(" (").append(passanger.getRoute().routeMinutes()).append(" мин, станций: ")
                     .append(path.size()).append(")\n");
         }
         return result.toString().stripTrailing();
@@ -198,7 +204,7 @@ public class CommandExecutor {
     private String save(Command command){
         Path path = Path.of(command.arg(0, "путь к файлу"));
         try {
-            scenarioIO.save(path, metro);
+            scenarioIO.save(path, metroMap, simulation);
             return "Схема сохранена в " + path;
         } catch (IOException e){
             throw new IllegalArgumentException("Не пишется файл " + path + ": " + e.getMessage());

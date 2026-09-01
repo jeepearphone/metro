@@ -1,5 +1,6 @@
 package entities.route;
 
+import entities.line.Edge;
 import entities.station.Station;
 
 import java.util.ArrayList;
@@ -21,6 +22,13 @@ public class Route {
         return transitions.getFirst();
     }
 
+    public int routeMinutes(){
+        int minutes = 0;
+        for (int i = 0; i + 1 < transitions.size(); i++){
+            minutes += new Edge(transitions.get(i), transitions.get(i + 1)).getTimeTo();
+        }
+        return minutes;
+    }
     public List<Station> getTransitions() {
         return new ArrayList<>(transitions);
     }

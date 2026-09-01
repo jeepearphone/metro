@@ -1,6 +1,6 @@
 package entities.passanger;
 
-import entities.Stations;
+import entities.MetroMap;
 import entities.TypeTime;
 import entities.station.Station;
 
@@ -10,14 +10,11 @@ import java.util.Optional;
 import java.util.Random;
 
 public class DestinationSelector {
+    private final MetroMap map;
     private final Random random;
-    private final Stations stations;
 
-    public DestinationSelector(Stations stations){
-        this(stations, new Random());
-    }
-    public DestinationSelector(Stations stations, Random random){
-        this.stations = stations;
+    public DestinationSelector(MetroMap map, Random random){
+        this.map = map;
         this.random = random;
     }
 
@@ -25,7 +22,7 @@ public class DestinationSelector {
         List<Station> candidates = new ArrayList<>();
         List<Double> weights = new ArrayList<>();
         double summaryWeight = 0;
-        for (Station station : stations.getStations()){
+        for (Station station : map.getStations()){
             if (station.equals(startStation)){
                 continue;
             }
@@ -48,7 +45,8 @@ public class DestinationSelector {
                 return Optional.of(candidates.get(i));
             }
         }
+        // Сюда попадаем только из-за погрешности double, и последний кандидат тут корректен:
+        // он уже прошёл отбор, в отличие от произвольной первой станции схемы.
         return Optional.of(candidates.getLast());
     }
-
 }

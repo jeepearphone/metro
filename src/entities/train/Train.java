@@ -8,7 +8,6 @@ import java.util.List;
 
 public class Train {
     private final int id;
-    private static int count;
     private static final int capability = 15;
     private final Line line;
     private Direction direction;
@@ -16,9 +15,8 @@ public class Train {
     private int minutesToNextStation;
     private final List<Passanger> passangers = new ArrayList<>();
 
-    public Train(Line line, Direction direction, int nextStationIndex, int minutesToNextStation){
-        id = count + 1;
-        count++;
+    public Train(int id, Line line, Direction direction, int nextStationIndex, int minutesToNextStation){
+        this.id = id;
         this.line = line;
         this.direction = direction;
         this.nextStationIndex = nextStationIndex;

@@ -1,6 +1,6 @@
 package inout;
 
-import entities.Stations;
+import entities.MetroMap;
 import entities.line.Line;
 import entities.station.Station;
 
@@ -17,8 +17,8 @@ public class AsciiMap {
     private static final String MARKERS =
             "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    public String render(Stations stations, List<Line> lines){
-        List<Station> all = stations.getStations();
+    public String render(MetroMap map){
+        List<Station> all = map.getStations();
         if (all.isEmpty()){
             return "Схема пуста: ни одной станции.";
         }
@@ -38,7 +38,7 @@ public class AsciiMap {
             java.util.Arrays.fill(row, EMPTY);
         }
 
-        for (Line line : lines){
+        for (Line line : map.getLines()){
             List<Station> onLine = line.getStations();
             for (int i = 0; i + 1 < onLine.size(); i++){
                 drawSegment(grid,
@@ -64,18 +64,18 @@ public class AsciiMap {
                     .append(station.getName())
                     .append(" (").append(station.getX()).append(", ").append(station.getY()).append(") ")
                     .append(station.getType())
-                    .append("  линии: ").append(lineNames(station))
+                    .append("  линии: ").append(lineNames(station, map))
                     .append('\n');
         }
         return result.toString();
     }
 
-    static String lineNames(Station station){
-        if (station.getLines().isEmpty()){
+    static String lineNames(Station station, MetroMap map){
+        if (map.getLinesByStation(station).isEmpty()){
             return "нет";
         }
         StringBuilder names = new StringBuilder();
-        for (Line line : station.getLines()){
+        for (Line line : map.getLinesByStation(station)){
             if (!names.isEmpty()){
                 names.append(", ");
             }

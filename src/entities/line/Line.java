@@ -9,14 +9,12 @@ import java.util.List;
 
 public class Line {
     private final int id;
-    private static int count;
     private final String name;
     private final List<Station> stations = new ArrayList<>();
     private final List<Train> trains = new ArrayList<>();
 
-    public Line(String name){
-        id = count + 1;
-        count++;
+    public Line(int id, String name){
+        this.id = id;
         this.name = name;
     }
 
@@ -29,7 +27,7 @@ public class Line {
     }
 
     public List<Edge> getAllEdges(Station station){
-        int index = stations.indexOf(station);
+        int index = requireIndex(station);
         List<Edge> edges = new ArrayList<>();
         if (index > 0){
             Station prev = stations.get(index - 1);
@@ -45,8 +43,8 @@ public class Line {
     }
 
     public Direction chooseDirection(Station stationFrom, Station stationTo){
-        int indexFrom = stations.indexOf(stationFrom);
-        int indexTo = stations.indexOf(stationTo);
+        int indexFrom = requireIndex(stationFrom);
+        int indexTo = requireIndex(stationTo);
         if (indexFrom < indexTo) {
             return Direction.FORWARD;
         }
@@ -57,6 +55,32 @@ public class Line {
 
     public boolean hasStation(Station station){
         return stations.contains(station);
+    }
+    
+    private int requireIndex(Station station){
+        int index = stations.indexOf(station);
+        if (index < 0){
+            throw new IllegalArgumentException(
+                    "Станция \"" + station.getName() + "\" не на линии \"" + name + "\"");
+        }
+        return index;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Line line)) return false;
+        return id == line.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 
     public List<Station> getStations() {

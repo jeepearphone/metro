@@ -1,5 +1,6 @@
 package entities.route;
 
+import entities.MetroMap;
 import entities.line.Edge;
 import entities.line.Line;
 import entities.station.Station;
@@ -8,12 +9,19 @@ import entities.station.StationPair;
 import java.util.*;
 
 public class RouteFinder {
+    private final MetroMap metroMap;
     private final Map<StationPair, List<Station>> routes = new HashMap<>();
+    private int cachedVersion = -1;
+
+    public RouteFinder(MetroMap metroMap){
+        this.metroMap = metroMap;
+    }
 
     public Optional<Route> findRoute(
             Station start,
             Station finish
     ){
+        dropCacheIfMapChanged();
         if (start.equals(finish)){
             return Optional.empty();
         }
@@ -29,8 +37,11 @@ public class RouteFinder {
         return Optional.of(new Route(new ArrayList<>(path)));
     }
 
-    public void invalidate(){
-        routes.clear();
+    private void dropCacheIfMapChanged(){
+        if (cachedVersion != metroMap.getVersion()){
+            routes.clear();
+            cachedVersion = metroMap.getVersion();
+        }
     }
 
     private List<Station> calculateRoute(
@@ -55,7 +66,7 @@ public class RouteFinder {
                 continue;
             }
             visited.add(current);
-            for (Line line : current.getLines()){
+            for (Line line : metroMap.getLinesByStation(current)){
                 for (Edge edge : line.getAllEdges(current)){
                     Station neighbor = edge.getStationTo();
                     int newTime = timeTo.get(current) + edge.getTimeTo();

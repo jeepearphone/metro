@@ -1,9 +1,11 @@
 package inout;
 
+import entities.MetroMap;
 import entities.line.Line;
 import entities.station.Station;
 import entities.train.Train;
 import metro.MetroSystem;
+import metro.SimulationSystem;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -49,16 +51,16 @@ public class ScenarioIO {
         return report.toString();
     }
 
-    public void save(Path path, MetroSystem metro) throws IOException {
+    public void save(Path path, MetroMap metroMap, SimulationSystem simulationSystem) throws IOException {
         StringBuilder out = new StringBuilder();
         out.append("# Схема метро\n\n");
 
-        for (Line line : metro.getLines()){
+        for (Line line : metroMap.getLines()){
             out.append("line ").append(CommandParser.quote(line.getName())).append('\n');
         }
         out.append('\n');
 
-        for (Station station : metro.getStations().getStations()){
+        for (Station station : metroMap.getStations()){
             out.append("station ")
                     .append(station.getX()).append(' ')
                     .append(station.getY()).append(' ')
@@ -68,7 +70,7 @@ public class ScenarioIO {
         out.append('\n');
 
         // Порядок attach = порядок станций на линии, его нельзя терять при сохранении.
-        for (Line line : metro.getLines()){
+        for (Line line : metroMap.getLines()){
             for (Station station : line.getStations()){
                 out.append("attach ")
                         .append(CommandParser.quote(line.getName())).append(' ')
@@ -77,7 +79,7 @@ public class ScenarioIO {
             out.append('\n');
         }
 
-        for (Train train : metro.getTrains()){
+        for (Train train : simulationSystem.getTrains()){
             out.append("train ")
                     .append(CommandParser.quote(train.getLine().getName())).append(' ')
                     .append(train.getDirection()).append(' ')

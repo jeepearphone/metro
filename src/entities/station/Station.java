@@ -1,6 +1,5 @@
 package entities.station;
 
-import entities.line.Line;
 import entities.TypeTime;
 import entities.passanger.Passanger;
 
@@ -10,30 +9,18 @@ import java.util.Objects;
 
 public class Station {
     private final int id;
-    private static int count;
     private final int x;
     private final int y;
     private final String name;
     private final TypeStation type;
-    private final List<Line> lines;
     private final List<Passanger> passangers = new ArrayList<>();
 
-    public Station(int x, int y, String name, TypeStation type){
-        this(x, y, name, type, List.of());
-    }
-
-    public Station(int x, int y, String name, TypeStation type, List<Line> lines){
-        id = count + 1;
+    public Station(int id, int x, int y, String name, TypeStation type){
+        this.id = id;
         this.x = x;
         this.y = y;
         this.name = name;
         this.type = type;
-        this.lines = new ArrayList<>(lines);
-        count++;
-    }
-
-    public void addLine(Line line){
-        lines.add(line);
     }
 
     public void landingPassangerToStation(Passanger passanger){
@@ -53,16 +40,12 @@ public class Station {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Integer.hashCode(id);
     }
 
     public StationDemand getDemand(TypeTime time){
         TimesStationBehavior behavior = new TimesStationBehavior(type);
         return behavior.getDemand(time);
-    }
-
-    public List<Line> getLines(){
-        return List.copyOf(lines);
     }
 
     public int getX() {
