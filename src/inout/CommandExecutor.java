@@ -5,6 +5,7 @@ import entities.TypeTime;
 import entities.line.Line;
 import entities.passanger.Passanger;
 import entities.route.Route;
+import entities.route.Segment;
 import entities.station.Station;
 import entities.station.TypeStation;
 import entities.train.Direction;
@@ -158,16 +159,23 @@ public class CommandExecutor {
         if (route.isEmpty()){
             return "Маршрута " + from.getName() + " -> " + to.getName() + " нет: станции не связаны";
         }
-        List<Station> path = route.get().getTransitions();
+        return describeRoute(route.get());
+    }
+
+    /**
+     * Маршрут состоит из «ног»: одна нога — поездка по одной линии от станции
+     * посадки до станции высадки. Смена ноги и есть пересадка.
+     */
+    private String describeRoute(Route route){
+        List<Segment> legs = route.getTransitions();
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < path.size(); i++){
-            if (i > 0){
-                result.append(" -> ");
-            }
-            result.append(path.get(i).getName());
+        result.append(legs.getFirst().stationStart().getName());
+        for (Segment leg : legs){
+            result.append(" --").append(leg.line().getName()).append("--> ")
+                    .append(leg.stationFinish().getName());
         }
-        result.append("\nвсего ").append(route.get().routeMinutes())
-                .append(" мин, станций: ").append(path.size());
+        result.append("\nвсего ").append(route.routeMinutes())
+                .append(" мин, пересадок: ").append(legs.size() - 1);
         return result.toString();
     }
 
@@ -184,10 +192,10 @@ public class CommandExecutor {
         result.append("На станции ").append(station.getName()).append(" появилось ")
                 .append(created.size()).append(" пассажиров:\n");
         for (Passanger passanger : created){
-            List<Station> path = passanger.getRoute().getTransitions();
+            Route route = passanger.getRoute();
             result.append("  -> ").append(passanger.getFinalStation().getName())
-                    .append(" (").append(passanger.getRoute().routeMinutes()).append(" мин, станций: ")
-                    .append(path.size()).append(")\n");
+                    .append(" (").append(route.routeMinutes()).append(" мин, пересадок: ")
+                    .append(route.getCountTransitions() - 1).append(")\n");
         }
         return result.toString().stripTrailing();
     }

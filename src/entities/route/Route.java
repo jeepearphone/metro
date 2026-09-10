@@ -1,36 +1,53 @@
 package entities.route;
 
 import entities.line.Edge;
+import entities.line.Line;
 import entities.station.Station;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Route {
-    private List<Station> transitions;
+    private final List<Segment> transitions;
+    private int current;
+    private final int minutes;
 
-    public Route(List<Station> transitions){
-        this.transitions = transitions;
+    public Route(List<Segment> transitions, int minutes){
+        this.transitions = List.copyOf(transitions);
+        this.minutes = minutes;
+    }
+
+    public Segment getCurrentSegment(){
+        return transitions.get(current);
+    }
+
+    public Station getCurrentStation(){
+        return getCurrentSegment().stationStart();
+    }
+
+    public Station getNextStation(){
+        return getCurrentSegment().stationFinish();
+    }
+
+    public Line getNextLine(){
+        return getCurrentSegment().line();
     }
 
     public boolean transit(){
-        transitions.removeFirst();
-        return transitions.isEmpty();
-    }
-
-    public Station getNextStop(){
-        return transitions.getFirst();
+        current++;
+        return current >= transitions.size();
     }
 
     public int routeMinutes(){
-        int minutes = 0;
-        for (int i = 0; i + 1 < transitions.size(); i++){
-            minutes += new Edge(transitions.get(i), transitions.get(i + 1)).getTimeTo();
-        }
         return minutes;
     }
-    public List<Station> getTransitions() {
+
+    public List<Segment> getTransitions() {
         return new ArrayList<>(transitions);
+    }
+
+    public int getCountTransitions(){
+        return transitions.size();
     }
 
 }

@@ -17,11 +17,11 @@ public class Passanger {
     }
 
     public boolean isYourStation(Station station){
-        return route.getNextStop().equals(station);
+        return route.getNextStation().equals(station);
     }
 
     public boolean needsLine(Line line){
-        return line.hasStation(route.getNextStop());
+        return line.equals(route.getNextLine());
     }
 
     public boolean transit(){
@@ -29,7 +29,7 @@ public class Passanger {
     }
 
     public Direction chooseDirection(Line line){
-        return line.chooseDirection(startStation, route.getNextStop());
+        return line.chooseDirection(route.getCurrentStation(), route.getNextStation());
     }
 
     public Route getRoute() {

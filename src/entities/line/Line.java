@@ -1,5 +1,6 @@
 package entities.line;
 
+import entities.route.Segment;
 import entities.station.Station;
 import entities.train.Direction;
 import entities.train.Train;

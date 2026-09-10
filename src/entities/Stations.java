@@ -13,15 +13,6 @@ public class Stations {
         stations.add(station);
     }
 
-    public Station getStationById(Integer id){
-        for (Station station : stations){
-            if (station.getId() == id){
-                return station;
-            }
-        }
-        return stations.getFirst();
-    }
-
     public Optional<Station> findById(int id){
         for (Station station : stations){
             if (station.getId() == id){
