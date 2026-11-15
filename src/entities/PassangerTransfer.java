@@ -7,10 +7,8 @@ import entities.train.Direction;
 import entities.train.Train;
 
 public class PassangerTransfer {
-    public void leaveTrain(
-            Station station,
-            Train train
-    ){
+    public void leaveTrain(Train train){
+        Station station = train.getNextStation();
         for (Passanger passanger : train.getPassangers()){
             if (passanger.isYourStation(station)){
                 train.landingPassangerFromTrain(passanger);
@@ -25,10 +23,8 @@ public class PassangerTransfer {
         }
     }
 
-    public void boardStation(
-            Station station,
-            Train train
-    ){
+    public void boardStation(Train train){
+        Station station = train.getNextStation();
         Line line = train.getLine();
         for (Passanger passanger : station.getPassangers()){
             if (!passanger.needsLine(line)){

@@ -1,5 +1,6 @@
 package metro;
 
+import entities.PassangerTransfer;
 import entities.TypeTime;
 import entities.line.Line;
 import entities.passanger.Passanger;
@@ -13,11 +14,14 @@ import java.util.List;
 
 public class SimulationSystem {
     private final PassangerGenerator generator;
+    private final PassangerTransfer transfer;
     private final List<Train> trains = new ArrayList<>();
     private int nextTrainId = 1;
+    private int currentMinute = 0;
 
-    public SimulationSystem(PassangerGenerator generator){
+    public SimulationSystem(PassangerGenerator generator, PassangerTransfer transfer){
         this.generator = generator;
+        this.transfer = transfer;
     }
 
     public Train addTrain(Line line, Direction direction, int nextStationIndex){
@@ -49,7 +53,28 @@ public class SimulationSystem {
         return created;
     }
 
+    public void tick() {
+        for (Train train : trains) {
+            train.tick();
+            if (train.getMinutesToNextStation() == 0) {
+                stoppingTrain(train);
+            }
+        }
+        //passangers
+    }
+
+    public void stoppingTrain(Train train) {
+        transfer.leaveTrain(train);
+        train.goingTrain();
+        transfer.boardStation(train);
+
+    }
+
     public List<Train> getTrains() {
         return List.copyOf(trains);
+    }
+
+    public int getCurrentMinute() {
+        return currentMinute;
     }
 }

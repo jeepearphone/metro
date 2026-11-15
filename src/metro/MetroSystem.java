@@ -1,6 +1,7 @@
 package metro;
 
 import entities.MetroMap;
+import entities.PassangerTransfer;
 import entities.passanger.DestinationSelector;
 import entities.passanger.PassangerGenerator;
 import entities.route.RouteFinder;
@@ -11,6 +12,7 @@ public class MetroSystem {
     private final MetroMap metroMap;
     private final RouteFinder routeFinder;
     private final SimulationSystem simulation;
+    private final PassangerTransfer passangerTransfer;
 
     public MetroSystem(){
         this(new Random());
@@ -21,7 +23,8 @@ public class MetroSystem {
         this.routeFinder = new RouteFinder(metroMap);
         DestinationSelector selector = new DestinationSelector(metroMap, random);
         PassangerGenerator generator = new PassangerGenerator(selector, routeFinder);
-        this.simulation = new SimulationSystem(generator);
+        this.passangerTransfer = new PassangerTransfer();
+        this.simulation = new SimulationSystem(generator, passangerTransfer);
     }
 
     public MetroMap map(){

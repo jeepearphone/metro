@@ -2,6 +2,7 @@ package entities.train;
 
 import entities.line.Line;
 import entities.passanger.Passanger;
+import entities.station.Station;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,30 @@ public class Train {
 
     public void landingPassangerFromTrain(Passanger passanger){
         passangers.remove(passanger);
+    }
+
+    public void changeDirectoty() {
+        if (direction == Direction.BACKWARD) {
+            direction = Direction.FORWARD;
+        } else if (direction == Direction.FORWARD) {
+            direction = Direction.BACKWARD;
+        }
+    }
+
+    public void tick() {
+        minutesToNextStation--;
+    }
+
+    public void goingTrain() {
+        nextStationIndex++;
+        if (!line.hasNextStation(nextStationIndex)) {
+            changeDirectoty();
+        }
+        minutesToNextStation = line.getTravelMinutes();
+    }
+
+    public Station getNextStation() {
+        return line.getStations().get(nextStationIndex);
     }
 
     public int getCountPassangers(){

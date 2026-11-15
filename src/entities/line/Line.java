@@ -13,6 +13,7 @@ public class Line {
     private final String name;
     private final List<Station> stations = new ArrayList<>();
     private final List<Train> trains = new ArrayList<>();
+    private List<Edge> edges = new ArrayList<>();
 
     public Line(int id, String name){
         this.id = id;
@@ -20,6 +21,8 @@ public class Line {
     }
 
     public void addStation(Station station){
+        Station prevStation = stations.get(stations.size() - 1);
+        edges.add(new Edge(prevStation, station));
         stations.add(station);
     }
 
@@ -57,7 +60,7 @@ public class Line {
     public boolean hasStation(Station station){
         return stations.contains(station);
     }
-    
+
     private int requireIndex(Station station){
         int index = stations.indexOf(station);
         if (index < 0){
@@ -65,6 +68,17 @@ public class Line {
                     "Станция \"" + station.getName() + "\" не на линии \"" + name + "\"");
         }
         return index;
+    }
+
+    public boolean hasNextStation(int nextStationIndex) {
+        if (nextStationIndex >= stations.size()) {
+            return false;
+        }
+        return true;
+    }
+
+    public int getTravelMinutes(int fromIndex, int toIndex) {
+        return edges.get(Math.min(fromIndex, toIndex)).getTimeTo();
     }
 
     @Override
